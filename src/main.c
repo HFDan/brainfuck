@@ -40,7 +40,8 @@ int main(int argc, char** argv) {
 	
 	// Define the memory space that the brainfuck program is allowed to access
     byte* memorySpace = (byte*)malloc(stackSize*sizeof(byte));
-    unsigned int address = 0; // The address starts at 0
+	memset(memorySpace, 0, stackSize*sizeof(byte)); // *ALWAYS* set the memory to 0
+    int address = 0; // The address starts at 0
     
 	FILE* sourcecode = fopen(file, "r");
 	if (sourcecode == NULL) {
@@ -52,6 +53,7 @@ int main(int argc, char** argv) {
 	
 	while (!feof(sourcecode)) {
 		char instruction;
+		int prevLoopStart = 0;
 		fscanf(sourcecode, "%c", &instruction);
 
 		switch (instruction) {
@@ -65,11 +67,11 @@ int main(int argc, char** argv) {
 				break;
 
 			case '>':
-				address++;
+				++address;
 				break;
 
 			case '<':
-				address--;
+				--address;
 				break;
 
 			case ',':
@@ -84,13 +86,22 @@ int main(int argc, char** argv) {
 				printf("%c", memorySpace[address]);
 				break;
 
+			case '[':
+				prevLoopStart = ftell(sourcecode);
+				break;
+
+			case ']':
+				if (memorySpace[address] != 0)
+					fseek(sourcecode, 0, prevLoopStart);
+				break;
+
 			default:
 				// Anything that is not an instruction is automatically a comment and will be ignored
 				break;
 		
 		}
 	}
-	
+
 	fclose(sourcecode);
 
 	return 0;
