@@ -1,1 +1,8 @@
 build/
+build.sh
+.idea/.gitignore
+.idea/brainfuck.iml
+.idea/deployment.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
